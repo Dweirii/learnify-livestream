@@ -6,11 +6,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// ✅ دالة مساعدة لإنشاء استعلامات استبعاد المستخدمين المحظورين
 export function createBlockedUsersFilter(currentUserId: string) {
   return {
     AND: [
-      // استبعاد المستخدمين الذين حظروا المستخدم الحالي
       {
         blocking: {
           none: {
@@ -18,7 +16,6 @@ export function createBlockedUsersFilter(currentUserId: string) {
           },
         },
       },
-      // استبعاد المستخدمين الذين حظرهم المستخدم الحالي
       {
         blockedBy: {
           none: {
@@ -30,24 +27,20 @@ export function createBlockedUsersFilter(currentUserId: string) {
   };
 }
 
-// ✅ دالة مساعدة لإنشاء استعلامات استبعاد المستخدمين المحظورين للمتابعين
 export function createFollowedUsersBlockFilter(currentUserId: string) {
   return {
     following: createBlockedUsersFilter(currentUserId),
   };
 }
 
-// ✅ دالة مساعدة للتحقق من حالة الحظر بين مستخدمين
 export async function checkIfBlocked(userAId: string, userBId: string) {
   const blockRecord = await db.block.findFirst({
     where: {
       OR: [
-        // userA حظر userB
         {
           blockerId: userAId,
           blockedId: userBId,
         },
-        // userB حظر userA
         {
           blockerId: userBId,
           blockedId: userAId,
@@ -63,11 +56,9 @@ export async function checkIfBlocked(userAId: string, userBId: string) {
   };
 }
 
-// ✅ دالة مساعدة للتحقق من حماية الملف الشخصي
 export async function checkProfileAccess(currentUserId: string, targetUserId: string) {
   const blockStatus = await checkIfBlocked(currentUserId, targetUserId);
   
-  // إذا كان المستخدم المستهدف حظر المستخدم الحالي، لا يمكن الوصول
   if (blockStatus.blockedByOther) {
     return {
       canAccess: false,

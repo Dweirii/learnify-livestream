@@ -18,7 +18,6 @@ export const followRouter = router({
         throw new Error("Cannot follow yourself");
       }
 
-      // ✅ Rate Limit (5 محاولات كل 10 ثواني)
       const { success, remaining, resetTime } = await rateLimit(
         `follow:${currentUserId}`,
         5,

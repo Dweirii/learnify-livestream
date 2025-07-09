@@ -1,4 +1,3 @@
-// ✅ أنواع مشتركة للتطبيق
 
 export type UserPreview = {
   id: string;

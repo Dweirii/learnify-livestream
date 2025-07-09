@@ -9,7 +9,6 @@ import { roomService } from "@/lib/liveKit";
 import { createBlockedUsersFilter } from "@/lib/utils";
 import { UserPreview, UserWithStream, BlockStatus, PaginatedResponse } from "@/lib/types";
 
-// استخدام النوع المحدد مسبقاً
 type RecommendedUser = UserWithStream;
 
 export const streamRouter = router({
@@ -33,9 +32,7 @@ export const streamRouter = router({
         throw new Error("User not found.");
       }
 
-      // ✅ 1. إنشاء علاقة الحظر وحذف علاقات المتابعة في كلا الاتجاهين
       const [block] = await db.$transaction([
-        // إنشاء أو تحديث علاقة الحظر
         db.block.upsert({
           where: {
             blockedId_blockerId: { blockerId, blockedId },
@@ -48,16 +45,13 @@ export const streamRouter = router({
             },
           },
         }),
-        // ✅ حذف علاقات المتابعة في كلا الاتجاهين
         db.follow.deleteMany({
           where: {
             OR: [
-              // المستخدم الحالي يتابع المستخدم المحظور
               {
                 followerId: blockerId,
                 followingId: blockedId,
               },
-              // المستخدم المحظور يتابع المستخدم الحالي
               {
                 followerId: blockedId,
                 followingId: blockerId,
@@ -67,7 +61,6 @@ export const streamRouter = router({
         }),
       ]);
 
-      // ✅ إزالة المستخدم من غرفة LiveKit
       try {
         if (roomService) {
           const roomName = `room:${blockerId}`;
@@ -78,7 +71,6 @@ export const streamRouter = router({
         // continue anyway
       }
 
-      // ✅ إرجاع كائن UserPreview بسيط
       return {
         id: block.blocked.id,
         username: block.blocked.username,
@@ -136,7 +128,6 @@ export const streamRouter = router({
       const currentUserId = self.id;
       const otherUserId = input.otherUserId;
 
-      // التحقق من أن المستخدم الحالي حظر المستخدم الآخر
       const blockedByMe = await db.block.findUnique({
         where: {
           blockedId_blockerId: {
@@ -146,7 +137,6 @@ export const streamRouter = router({
         },
       });
 
-      // التحقق من أن المستخدم الآخر حظر المستخدم الحالي
       const blockedByOther = await db.block.findUnique({
         where: {
           blockedId_blockerId: {
@@ -240,7 +230,6 @@ export const streamRouter = router({
           ? {
               AND: [
                 { NOT: { id: userId } },
-                // ✅ استبعاد المستخدمين الذين يتابعهم المستخدم الحالي
                 {
                   NOT: {
                     followedBy: {
@@ -248,7 +237,6 @@ export const streamRouter = router({
                     },
                   },
                 },
-                // ✅ استبعاد المستخدمين المحظورين باستخدام الدالة المساعدة
                 createBlockedUsersFilter(userId),
               ],
             }
