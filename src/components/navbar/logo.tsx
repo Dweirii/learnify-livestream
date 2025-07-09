@@ -18,13 +18,8 @@ export const Logo = () => {
             alt="Learnify Logo"
             width={120}
             height={40}
-            className={cn(
-              "transition-transform duration-200",
-              "group-hover:scale-105",
-              isHome && "animate-pulse"
-            )}
             priority
-          />      
+          />
         </div>
       </div>
     </Link>

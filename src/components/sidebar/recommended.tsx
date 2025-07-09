@@ -52,8 +52,8 @@ export const Recommended = ({ data, isLoading }: RecommendedProps) => {
           )}
         </div>
         {!collapsed && (
-          <div className="px-2 py-6 text-center">
-            <TrendingUp className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
+          <div className="px-2 py-4 text-center">
+            <TrendingUp className="w-6 h-6 mx-auto mb-2 text-muted-foreground/50" />
             <p className="text-xs text-muted-foreground">
               No recommendations yet
             </p>
@@ -64,8 +64,8 @@ export const Recommended = ({ data, isLoading }: RecommendedProps) => {
   }
 
   return (
-    <div className="px-4">
-      <div className="flex items-center gap-2 mb-4">
+    <div className="px-3">
+      <div className="flex items-center gap-2 mb-3">
         <Sparkles className="w-4 h-4 text-muted-foreground" />
         {!collapsed && (
           <span className="text-sm font-semibold text-muted-foreground">

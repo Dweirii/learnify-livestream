@@ -5,6 +5,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { Prisma } from "@prisma/client";
 import { redis } from "@/lib/redis";
 import { getSelf } from "@/lib/auth-service";
+import { createFollowedUsersBlockFilter, createBlockedUsersFilter } from "@/lib/utils";
 
 export const followRouter = router({
   follow: protectedProcedure
@@ -102,13 +103,7 @@ export const followRouter = router({
     const follows = await db.follow.findMany({
       where: {
         followerId: currentUserId,
-        following: {
-          blocking: {
-            none: {
-              blockedId: currentUserId,
-            },
-          },
-        },
+        ...createFollowedUsersBlockFilter(currentUserId),
       },
       include: {
         following: {
@@ -152,13 +147,7 @@ export const followRouter = router({
       const follows = await db.follow.findMany({
         where: {
           followerId: userId,
-          following: currentUserId ? {
-            blocking: {
-              none: {
-                blockedId: currentUserId,
-              },
-            },
-          } : undefined,
+          ...(currentUserId ? createFollowedUsersBlockFilter(currentUserId) : {}),
         },
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
@@ -201,13 +190,7 @@ export const followRouter = router({
         const followedUsers = await db.follow.findMany({
           where: { 
             followerId: currentUserId,
-            following: {
-              blocking: {
-                none: {
-                  blockedId: currentUserId,
-                },
-              },
-            },
+            following: createBlockedUsersFilter(currentUserId),
           },
           take: 10, // Limit for sidebar
           include: {

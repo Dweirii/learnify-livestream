@@ -68,10 +68,10 @@ export const UserItem = ({
               asChild
               variant="ghost"
               size="sm"
-              className={cn(
-                "w-full h-10 px-2",
-                isActive && "bg-accent text-accent-foreground"
-              )}
+                              className={cn(
+                  "w-full h-10 px-2",
+                  isActive && "bg-accent text-accent-foreground"
+                )}
             >
               <Link href={href}>
                 {content}
